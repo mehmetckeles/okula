@@ -22,7 +22,7 @@
     --ink:#22211B; --ink-soft:#5A594F; --ink-faint:#8B897C;
     --line:#D8D6C8; --pine:#2E5648; --pine-soft:#4E7A6A; --ochre:#A5762D;
     --c-kok:#7A5A9E; --c-derin:#2E5648; --c-gerilim:#B5502F; --c-yanki:#3E7CA6; --c-vaka:#A5762D;
-    --trail-w:2px; --measure:66ch; --body-size:1.19rem; --body-lh:1.85;
+    --trail-w:2px; --measure:62ch; --body-size:1.19rem; --body-lh:1.85;
   }
   html[data-theme="gece"]{
     --paper:#191A17; --paper-raised:#20221E;
@@ -119,16 +119,19 @@
   .stop-links{color:var(--pine-soft)}
   .state-okundu{color:var(--pine)} .state-yarim{color:var(--ochre)}
   .empty{margin-top:2rem;padding-left:2.1rem;color:var(--ink-faint);font-style:italic}
-  .read-head{margin-bottom:2.6rem}
+  .read-head{margin-bottom:2.9rem;padding-bottom:1.75rem;border-bottom:1px solid var(--line);max-width:var(--measure)}
   .crumb{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.1em;color:var(--ochre);text-transform:uppercase;margin-bottom:1.1rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   .crumb .in-trail{color:var(--pine)}
-  .read-head h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.2;letter-spacing:-.015em}
-  .read-meta{margin-top:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-faint);display:flex;gap:1.2rem;flex-wrap:wrap}
-  article{max-width:var(--measure)}
-  article p{margin-bottom:1.5em}
-  article h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.42rem;line-height:1.3;margin:2.1em 0 .85em;letter-spacing:-.01em}
+  .read-head h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2rem,5.4vw,3.1rem);line-height:1.16;letter-spacing:-.018em;max-width:19ch}
+  .read-meta{margin-top:1.35rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-faint);display:flex;gap:1.2rem;flex-wrap:wrap}
+  article{max-width:var(--measure);line-height:1.72}
+  article p{margin-bottom:1.15em;text-wrap:pretty}
+  article p:first-of-type{font-size:1.05em}
+  article h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.52rem;line-height:1.28;margin:3.1em 0 .72em;letter-spacing:-.012em;color:var(--pine)}
+  article h2::before{content:"";display:block;width:34px;height:2px;background:var(--ochre);opacity:.8;margin-bottom:1rem}
   article h2:first-child{margin-top:0}
-  article p:first-of-type::first-letter{font-family:'Fraunces',serif;font-weight:600;font-size:3.3em;float:left;line-height:.82;padding-right:.09em;color:var(--pine)}
+  article h2:first-child::before{display:none}
+  article p:first-of-type::first-letter{font-family:'Fraunces',serif;font-weight:600;font-size:3.05em;float:left;line-height:.84;padding-right:.1em;padding-top:.02em;color:var(--pine)}
   .read-head h1{outline:none}
   .forks{margin-top:4.5rem}
   .tick{display:flex;align-items:center;gap:.9rem;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.6rem}
@@ -253,7 +256,7 @@ function filtered(){
 
 function renderIndex(){
   const wasEssay=currentSlug!==null;
-  currentSlug=null; bar.style.width='0%'; remaining.classList.remove('show');
+  currentSlug=null; sectionEls=[]; bar.style.width='0%'; remaining.classList.remove('show');
   document.title='Mehmet Cihat Keleş — '+SITE;
   const half=POSTS.find(p=>stateOf(p.slug)==='yarim');
   const resumeHTML=half?'<button class="resume" data-open="'+half.slug+'"><span>Kaldığınız yerden devam edin: <b>'+esc(half.title)+'</b></span><span class="go">→ %'+Math.round(progressMap[half.slug]*100)+'</span></button>':'';
@@ -327,6 +330,7 @@ function renderEssay(slug){
     trailbar='<div class="trailbar trailbar-soft"><div class="tb-top"><span class="tb-name">Bu yazı bir rotanın durağı</span></div>'
       +'<div class="tb-chips">'+chips+'</div></div>';
   }
+  const nSec=e.body.filter(b=>b.slice(0,3)==='## ').length;
   const outs=outgoing(slug);
   let forkHTML='';
   if(trailNext){const n=bySlug(trailNext);forkHTML+='<button class="fork-in-trail" data-rgo="'+n.slug+'"><div><div class="fit-l">Bu rotada sıradaki durak</div><div class="fit-t">'+esc(n.title)+'</div></div><div class="fit-go">→</div></button>';}
@@ -341,7 +345,7 @@ function renderEssay(slug){
     trailbar
     +'<div class="read-head">'
     +'<h1 tabindex="-1">'+esc(e.title)+'</h1>'
-    +'<div class="read-meta"><span>'+e.minutes+' dk okuma</span><span>Mehmet C. Keleş</span></div></div>'
+    +'<div class="read-meta"><span>'+e.minutes+' dk okuma</span>'+(nSec>2?'<span>'+nSec+' bölüm</span>':'')+'<span>Mehmet C. Keleş</span></div></div>'
     +'<article>'+bodyToHTML(e)+'</article>'
     +'<div class="forks"><div class="tick">yolun çatalları</div>'+forkHTML
     +'<a class="back-link" href="#" id="backLink">← tüm yazılara dön (esc)</a></div>';
@@ -358,10 +362,11 @@ function renderEssay(slug){
   document.getElementById('backLink').addEventListener('click',ev=>{ev.preventDefault();go('#/');});
   const tbx=document.getElementById('tbExit'); if(tbx)tbx.addEventListener('click',ev=>{ev.preventDefault();go('#/yazi/'+currentSlug);});
   window.scrollTo(0,0); updateReadingUI(); remaining.classList.add('show');
+  sectionEls=[...app.querySelectorAll('article h2')];
   const h1=app.querySelector('.read-head h1'); if(h1)h1.focus({preventScroll:true});
 }
 
-let saveTick=0;
+let saveTick=0, sectionEls=[];
 function updateReadingUI(){
   if(!currentSlug){bar.style.width='0%';return;}
   const doc=document.documentElement, total=doc.scrollHeight-window.innerHeight;
@@ -370,7 +375,13 @@ function updateReadingUI(){
   if(p>(progressMap[currentSlug]||0)){progressMap[currentSlug]=p;
     const now=Date.now(); if(now-saveTick>1200){saveTick=now;saveProgress();}}
   const e=bySlug(currentSlug), left=Math.max(0,Math.ceil(e.minutes*(1-p)));
-  remaining.textContent=p>=0.98?'okuma tamamlandı ✓':'~'+left+' dk kaldı';
+  let sec='';
+  if(sectionEls.length){
+    let i=-1;
+    for(let k=0;k<sectionEls.length;k++){ if(sectionEls[k].getBoundingClientRect().top<=150) i=k; else break; }
+    sec=(i<0?'giriş':'bölüm '+(i+1)+'/'+sectionEls.length)+' · ';
+  }
+  remaining.textContent=p>=0.98?'okuma tamamlandı ✓':sec+'~'+left+' dk kaldı';
 }
 window.addEventListener('scroll',()=>{document.getElementById('topbar').classList.toggle('scrolled',window.scrollY>10);updateReadingUI();},{passive:true});
 window.addEventListener('hashchange',applyRoute);
